@@ -1,4 +1,7 @@
 (() => {
+  // Current shown notification, saved for dismissing.
+  var currentNot = null;
+
   // Music handling
   const state = {
     music: "stop",
@@ -153,9 +156,14 @@
       case "notify":
       case "notify-":
         if (event.t === "notify") {
-          require("notify").show(prettifyNotificationEvent(event));
+          currentNot = prettifyNotificationEvent(event);
+          require("notify").show(currentNot);
           Bangle.buzz();
         } else { // notify-
+          currentNot.t = "notify";
+          currentNot.n = "DISMISS";
+          gbSend(currentNot);
+          currentNot = null;
           require("notify").hide(event);
         }
         break;
